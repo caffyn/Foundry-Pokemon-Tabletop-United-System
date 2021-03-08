@@ -21,6 +21,7 @@ import { PTUDexDragOptions } from './forms/dex-drag-options-form.js'
 import { PTUCustomSpeciesEditor } from './forms/custom-species-editor-form.js'
 import { PTUCustomMonEditor } from './forms/custom-mon-editor-form.js'
 import { PTUCharacterNotesForm } from './forms/character-notes-form.js'
+import { SidebarForm } from './forms/sidebar-form.js'
 import { RollWithDb } from './utils/roll-calculator.js'
 import { InitCustomSpecies, UpdateCustomSpecies} from './custom-species.js'
 import { ChangeLog } from './forms/changelog-form.js'
@@ -55,6 +56,7 @@ Hooks.once('init', async function() {
     PTUCustomSpeciesEditor,
     PTUCustomMonEditor,
     PTUCharacterNotesForm,
+    SidebarForm,
     levelProgression,
     pokemonData,
     customSpeciesData: [],
@@ -541,6 +543,10 @@ Hooks.once("ready", async function() {
     // Finally add it to the <head>
     document.getElementsByTagName("head")[0].appendChild(scriptTag);  
   }
+
+  let sidebar = new game.ptu.SidebarForm();
+  sidebar.render(true);
+  debug(sidebar);
 });
 
 /* -------------------------------------------- */
