@@ -14,6 +14,8 @@ import StatBlock from "../api/front-end/components/statBlock.js";
 import StatBlockTotal from "../api/front-end/components/statBlockTotal.js";
 import StatBlockLevelUpPoints from "../api/front-end/components/statBlockLevelUpPoints.js";
 import EvolutionBlock from "../api/front-end/components/evolutionBlock.js";
+import { GetOrCacheAbilities, GetOrCacheCapabilities, GetOrCacheMoves } from "../utils/cache-helper.js";
+import { ActorGenerator } from "../utils/actor-generator.js";
 
 /**
  * Extend the basic ActorSheet with some very simple modifications
@@ -224,6 +226,27 @@ export class PTUPokemonCharactermancer extends FormApplication {
 
     log(`CHARACTERMANCER: Updating ${this.object.name}`, data);
     await this.object.update(data);
+
+    if(!this.object.getFlag("ptu", "hasBeenGenerated")) {
+      const generator = new ActorGenerator(this.object);
+
+      if(generator.actor.itemTypes.ability.length == 0) {
+        const allAbilities = await GetOrCacheAbilities(); 
+        generator.PrepareAbilities(allAbilities);
+      }
+      if(generator.actor.itemTypes.move.length == 0) {
+        const allMoves = await GetOrCacheMoves(); 
+        generator.PrepareMoves(allMoves);
+      }
+      if(generator.actor.itemTypes.capability.length == 0) {
+        const allCapabilities = await GetOrCacheCapabilities();
+        generator.PrepareCapabilities(allCapabilities);
+      }
+
+      await generator.ApplyChanges();
+
+      this.object.setFlag("ptu", "hasBeenGenerated", true)
+    }
   }
 
   async close(options) {
